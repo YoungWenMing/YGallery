@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">YGallery</string>
+
+    <string name="main_intro">
+        Click the following button to show information of each image on this cellphone.\n
+        Remember grant this app according permission.
+    </string>
+
+    <string name="show_images">Show Images Info</string>
+
+    <string name="intro_message">
+        <![CDATA[
+
+
+            This sample shows runtime permissions available in Android M and above.
+            Display the log on screen to follow the execution.
+            If executed on an Android M device, an additional option to access contacts is shown
+            that is declared with optional, M and above only permissions.
+
+
+        ]]>
+    </string>
+
+</resources>
