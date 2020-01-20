@@ -34,7 +34,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     //need an adapter
     private ImageAdapter mAdapter;
     //image id set
-    private static final int[] IMAGE_IDs = {R.drawable.a1, R.drawable.a2,R.drawable.a3,R.drawable.a4,R.drawable.a5,};
+    private static final int[] IMAGE_IDs = {R.drawable.a1, R.drawable.a2,R.drawable.a3,R.drawable.a4,R.drawable.a5,
+                                            R.drawable.b1,R.drawable.b2,R.drawable.b3,R.drawable.b4,R.drawable.b5,};
 
     public ImageGridFragment(){ }
 
@@ -87,6 +88,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         // context object is needed to get resources
         private final Context mContext;
 
+        private final int numImages = IMAGE_IDs.length;
+
         private int mItemHeight = 0;
         private int mNumColumns = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
@@ -105,7 +108,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
 
         @Override
         public int getCount() {
-            return 5;   //5 images are going to be show in the grid
+            return numImages;   // images are going to be show in the grid
         }
 
         @Override
@@ -129,6 +132,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             Log.i(TAG, "inflating the image indexed " + position);
             ImageView imageView;
             if (convertView == null){
+                Log.i(TAG, "convertView is null");
                 imageView = new ImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setLayoutParams(mImageViewLayoutParams);
@@ -140,7 +144,11 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             if (imageView.getLayoutParams().height != mItemHeight){
                 imageView.setLayoutParams(mImageViewLayoutParams);
             }
-            if (convertView == null){
+            //when convertView is null, it is the first inflation
+            //the height is zero, so that just one pixel will be sampled
+            //after the global layout process ends, the final height of each
+            //grid is determined, we can load and sample the target image now
+            if (convertView != null && imageView.getLayoutParams().height != 0){
                 mBitmaploader.loadBitmap(IMAGE_IDs[position], imageView, mItemHeight);
             }
             return imageView;
@@ -160,6 +168,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             }
             mItemHeight = height;
             mImageViewLayoutParams = new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
+            //it always inflate all views again if the data set changed.
             notifyDataSetChanged();
         }
     }
