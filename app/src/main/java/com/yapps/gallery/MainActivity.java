@@ -9,11 +9,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.yapps.gallery.easyloader.LoaderActivity;
+import com.yapps.gallery.imagewall.ui.ImageGridActivity;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
 
-    Button btnLoader;
+    Button btnLoader, btnWall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         btnLoader = (Button) this.findViewById(R.id.loader_button);
         btnLoader.setOnClickListener(this);
+        btnWall = (Button) this.findViewById(R.id.wall_button);
+        btnWall.setOnClickListener(this);
     }
 
     @Override
@@ -29,6 +32,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.loader_button:
                 Intent intent = new Intent(this, LoaderActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.wall_button:
+                Intent intent1 = new Intent(this, ImageGridActivity.class);
+                startActivity(intent1);
                 break;
             default:
                 break;
