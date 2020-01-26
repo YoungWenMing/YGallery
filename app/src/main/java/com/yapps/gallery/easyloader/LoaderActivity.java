@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,7 +40,6 @@ public class LoaderActivity extends AppCompatActivity {
 //        get the ListView object
         // inflate the fragment
         if (savedInstanceState == null){
-
             RequestPermissionFragment fragment = new RequestPermissionFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.sample_content_fragment, fragment);
@@ -89,7 +89,7 @@ public class LoaderActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.sample_content_fragment, ImageListFragment.getInstance())
                 .addToBackStack("images")               //add this fragment to stack
-                .commit();
+                .commit();                              //commitNow is not allowed here
     }
 
     @Override
@@ -106,6 +106,12 @@ public class LoaderActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        getSupportFragmentManager().popBackStack();
+        int entryNum = getSupportFragmentManager().getBackStackEntryCount();
+        if (entryNum == 0){
+            super.onBackPressed();
+        }else {
+            getSupportFragmentManager().popBackStack();
+        }
     }
+
 }
