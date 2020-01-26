@@ -153,7 +153,7 @@ public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemC
                 imageView.setLayoutParams(mImageViewLayoutParams);
             }
 
-            if (convertView != null && imageView.getLayoutParams().height != 0){
+            if (imageView.getLayoutParams().height != 0){
                 cursor.moveToPosition(position);
                 Long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
                 Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
