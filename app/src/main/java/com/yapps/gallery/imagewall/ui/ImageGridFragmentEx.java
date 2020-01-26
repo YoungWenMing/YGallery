@@ -1,10 +1,11 @@
 package com.yapps.gallery.imagewall.ui;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,36 +20,48 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.yapps.gallery.R;
 import com.yapps.gallery.imagewall.util.BitmapLoader;
 
-public class ImageGridFragment extends Fragment implements AdapterView.OnItemClickListener {
+import java.io.IOException;
+import java.io.InputStream;
 
-    private static final String TAG = "ImageGridFragment";
+public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemClickListener {
 
-    private int mImageThumbSize;
-    private int mImageThumbSpacing;
-    private int mItemHeight;
+    private static final String TAG = "GridFragmentEx";
 
-    //need an adapter
-    private ImageAdapter mAdapter;
-    //image id set
-    private static final int[] IMAGE_IDs = {R.drawable.a1, R.drawable.a2,R.drawable.a3,R.drawable.a4,R.drawable.a5,
-                                            R.drawable.b1,R.drawable.b2,R.drawable.b3,R.drawable.b4,R.drawable.b5,};
+    private static final String[] PROJECTION = {
+            MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media._ID
+    };
 
-    public ImageGridFragment(){ }
+    private static final String ORDER = MediaStore.Images.Media.DISPLAY_NAME + "ASC";
+    private int mImageThumbSize ;
+    private int mImageThumbSpacing ;
+
+    private Cursor cursor;
+
+    private ImageAdapter mAdapter = null;
+
+    private ContentResolver resolver = null;
+
+    public ImageGridFragmentEx(){    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "inside onCreate");
+        Log.i(TAG, " inside onCreate");
 
-        //initialize some layout params
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
+        cursor = getActivity().getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        Log.i(TAG, "cursor nums " + cursor.getCount());
         mAdapter = new ImageAdapter(getActivity());
+
+        resolver = getActivity().getContentResolver();
+
     }
 
     @Nullable
@@ -59,60 +72,57 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(this);
 
-        //添加布局过程监听，获取当前屏幕的宽高，进而计算每个网格的宽高
         gridView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (mAdapter.getmNumColumns() == 0){
-                    Log.i(TAG, "calculating column number with width = " + gridView.getWidth());
-                    // 向下取整获得列数量
+                if (mAdapter.getNumColumns() == 0){
+
                     final int numColumns = (int) Math.floor(
-                            gridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                            gridView.getWidth() / (mImageThumbSpacing + mImageThumbSize)
+                    );
+                    Log.i(TAG, "calculating column number with width = " + gridView.getWidth() + " numColumns = " + numColumns);
                     if (numColumns > 0){
                         final int columnWidth = (gridView.getWidth() / numColumns) - mImageThumbSpacing;
-                        mAdapter.setmItemHeight(columnWidth);
-                        mAdapter.setmNumColumns(numColumns);
-                        // 这个设置只会完成一次，一次之后不会再监听
+                        mAdapter.setItemHeight(columnWidth);
+                        mAdapter.setNumColumns(numColumns);
                         gridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 }
             }
         });
 
-        return view;
+        return gridView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cursor.close();
     }
 
 
     private class ImageAdapter extends BaseAdapter{
 
-        // context object is needed to get resources
         private final Context mContext;
-
-        private final int numImages = IMAGE_IDs.length;
-
-        private int mItemHeight = 0;
-        private int mNumColumns = 0;
+        private int itemHeight = 0;
+        private int numColumns = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
-
-        private BitmapLoader mBitmaploader;
+        private BitmapLoader mBitmapLoader;
 
         ImageAdapter(Context context){
             super();
             mContext = context;
-            // decide the layout pattern of an imageview in grid
             mImageViewLayoutParams = new GridView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
             );
-            mBitmaploader = new BitmapLoader(context);
+            mBitmapLoader = new BitmapLoader(context);
         }
 
-        @Override
-        public int getCount() {
-            return numImages;   // images are going to be show in the grid
+        public int getCount(){
+            return cursor.getCount();
         }
 
-        @Override
-        public Object getItem(int position) {
+        public Object getItem(int position){
             return null;
         }
 
@@ -128,11 +138,10 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-
             Log.i(TAG, "inflating the image indexed " + position);
-            ImageView imageView;
+            ImageView imageView ;
             if (convertView == null){
-                Log.i(TAG, "convertView is null");
+                Log.i(TAG, " convertView is null");
                 imageView = new ImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setLayoutParams(mImageViewLayoutParams);
@@ -140,38 +149,46 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
                 imageView = (ImageView) convertView;
             }
 
-            //adjust the item params to fit the grid
-            if (imageView.getLayoutParams().height != mItemHeight){
+            if (imageView.getLayoutParams().height != itemHeight){
                 imageView.setLayoutParams(mImageViewLayoutParams);
             }
-            //when convertView is null, it is the first inflation
-            //the height is zero, so that just one pixel will be sampled
-            //after the global layout process ends, the final height of each
-            //grid is determined, we can load and sample the target image now
+
             if (convertView != null && imageView.getLayoutParams().height != 0){
-                mBitmaploader.loadBitmap(IMAGE_IDs[position], imageView, mItemHeight);
+                cursor.moveToPosition(position);
+                Long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
+                Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
+//                String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                Log.i(TAG, "image id is " + id + " and uri is " + uri.toString());
+                try {
+                    InputStream stream = resolver.openInputStream(uri);
+                    Log.i(TAG,  "stream is null? " + (stream == null));
+                    mBitmapLoader.loadBitmap(resolver.openInputStream(uri), imageView, itemHeight);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
             return imageView;
         }
 
-        public int getmNumColumns() {
-            return mNumColumns;
+        public int getNumColumns() {
+            return numColumns;
         }
 
-        public void setmNumColumns(int n){
-            mNumColumns = n;
+        public void setNumColumns(int n){
+            numColumns = n;
         }
 
-        public void setmItemHeight(int height){
-            if (height == mItemHeight){
+        public void setItemHeight(int height){
+            if (height == itemHeight){
                 return;
             }
-            mItemHeight = height;
-            mImageViewLayoutParams = new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight);
+            itemHeight = height;
+            mImageViewLayoutParams = new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, itemHeight);
             //it always inflate all views again if the data set changed.
             notifyDataSetChanged();
         }
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

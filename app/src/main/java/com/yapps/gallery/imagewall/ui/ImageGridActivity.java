@@ -18,7 +18,7 @@ public class ImageGridActivity extends AppCompatActivity {
         setContentView(R.layout.activity_grid_main);
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.grid_content, new ImageGridFragment())
+                    .replace(R.id.grid_content, new ImageGridFragmentEx())
                     .commitNow();       //commit is asynchronous method while commitNow is synchronous
         }
     }
