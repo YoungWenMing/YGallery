@@ -148,7 +148,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             //the height is zero, so that just one pixel will be sampled
             //after the global layout process ends, the final height of each
             //grid is determined, we can load and sample the target image now
-            if (convertView != null && imageView.getLayoutParams().height != 0){
+            //if (convertView == null && imageView.getLayoutParams().height != 0){
+            if (imageView.getLayoutParams().height != 0){
                 mBitmaploader.loadBitmap(IMAGE_IDs[position], imageView, mItemHeight);
             }
             return imageView;
