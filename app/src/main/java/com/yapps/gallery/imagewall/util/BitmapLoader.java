@@ -7,6 +7,12 @@ import android.widget.ImageView;
 
 import androidx.core.content.ContextCompat;
 
+import com.yapps.gallery.easyloader.FileUtil;
+
+import java.io.InputStream;
+
+import javax.xml.parsers.FactoryConfigurationError;
+
 public class BitmapLoader {
 
     private Context mContext;
@@ -36,6 +42,29 @@ public class BitmapLoader {
 
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), resId, opts);
         view.setImageBitmap(bitmap);
+    }
+
+    public void loadBitmap(InputStream stream, ImageView view, int height){
+        FileUtil fileUtil = new FileUtil();
+        byte[] array = null;
+        try {
+            array = fileUtil.readInputStream(stream);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+
+        if (array != null){
+            BitmapFactory.decodeByteArray(array, 0, array.length, opts);
+            int inSampleSize = ImageResizer.calculateInSampleSize(opts, height, height);
+            opts.inSampleSize = inSampleSize;
+            opts.inJustDecodeBounds = false;
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(array, 0, array.length, opts);
+            view.setImageBitmap(bitmap);
+        }
     }
 
 
