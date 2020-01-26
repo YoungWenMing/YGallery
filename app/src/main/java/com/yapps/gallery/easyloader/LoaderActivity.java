@@ -34,7 +34,7 @@ public class LoaderActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loader_main);
-        mLayout = findViewById(R.id.sample_main_layout);
+        mLayout =  findViewById(R.id.sample_main_layout);
 
 //        get the ListView object
         // inflate the fragment
