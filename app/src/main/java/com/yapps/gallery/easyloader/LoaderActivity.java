@@ -21,6 +21,8 @@ import com.yapps.gallery.R;
 /***
  * loader 是用来加载特定数据的类，activity或者fragment通过
  * LoaderManager的回调方法来操作loader
+ *
+ * Created by Yang Wenming, Jan 15th 2020
  */
 
 public class LoaderActivity extends AppCompatActivity {
