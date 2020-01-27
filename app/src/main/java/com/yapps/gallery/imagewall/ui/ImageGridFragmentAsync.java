@@ -20,13 +20,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.yapps.gallery.R;
+import com.yapps.gallery.imagewall.util.BitmapFetcher;
 import com.yapps.gallery.imagewall.util.BitmapLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemClickListener {
+public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "GridFragmentEx";
 
@@ -45,7 +47,9 @@ public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemC
 
     private ContentResolver resolver = null;
 
-    public ImageGridFragmentEx(){    }
+    private BitmapFetcher mFetcher;
+
+    public ImageGridFragmentAsync(){    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemC
         mAdapter = new ImageAdapter(getActivity());
 
         resolver = getActivity().getContentResolver();
+        mFetcher = new BitmapFetcher(getActivity(), mImageThumbSize);
 
     }
 
@@ -160,9 +165,10 @@ public class ImageGridFragmentEx extends Fragment implements AdapterView.OnItemC
 //                String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
                 Log.i(TAG, "image id is " + id + " and uri is " + uri.toString());
                 try {
-                    InputStream stream = resolver.openInputStream(uri);
-                    Log.i(TAG,  "stream is null? " + (stream == null));
-                    mBitmapLoader.loadBitmap(resolver.openInputStream(uri), imageView, itemHeight);
+//                    InputStream stream = resolver.openInputStream(uri);
+//                    Log.i(TAG,  "stream is null? " + (stream == null));
+//                    mBitmapLoader.loadBitmap(resolver.openInputStream(uri), imageView, itemHeight);
+                    mFetcher.loadBitmap(uri, imageView);
                 }catch (IOException e){
                     e.printStackTrace();
                 }
