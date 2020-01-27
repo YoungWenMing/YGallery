@@ -3,8 +3,11 @@ package com.yapps.gallery.imagewall.util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -55,6 +58,7 @@ public class BitmapFetcher {
     public void loadBitmap(Uri uri, ImageView imageView) throws IOException {
         //TODO:apply asynctask here to load a bitmap, cache will be considered
         //
+//        Log.i(TAG, "loading bitmap for " + imageView.getId());
         imageView.setImageBitmap(mLoadingBitmap);
         BitmapLoadTask task = new BitmapLoadTask(uri, imageView);
         task.execute();
@@ -106,7 +110,18 @@ public class BitmapFetcher {
      */
     private void setImageDrawable(ImageView view, Drawable value){
         if (view != null){
-            view.setImageDrawable(value);
+            final TransitionDrawable td =
+                    new TransitionDrawable(new Drawable[] {
+                            new ColorDrawable(Color.TRANSPARENT),
+                            value
+                    });
+            // Set background to loading bitmap
+            view.setBackground(
+                    new BitmapDrawable(mContext.getResources(), mLoadingBitmap));
+
+            view.setImageDrawable(td);
+            td.startTransition(200);
+//            view.setImageDrawable(value);
         }
     }
 
