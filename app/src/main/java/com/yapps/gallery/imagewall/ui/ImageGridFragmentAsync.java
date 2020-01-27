@@ -31,14 +31,14 @@ import java.io.InputStream;
 
 public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnItemClickListener {
 
-    private static final String TAG = "GridFragmentEx";
+    private static final String TAG = "GridFragmentAsync";
 
     private static final String[] PROJECTION = {
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media._ID
     };
 
-    private static final String ORDER = MediaStore.Images.Media.DISPLAY_NAME + "ASC";
+    private static final String ORDER = MediaStore.Images.Media.DISPLAY_NAME + " ASC";
     private int mImageThumbSize ;
     private int mImageThumbSpacing ;
 
@@ -61,7 +61,7 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
         cursor = getActivity().getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER);
         Log.i(TAG, "cursor nums " + cursor.getCount());
         mAdapter = new ImageAdapter(getActivity());
 
@@ -148,7 +148,7 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
             Log.i(TAG, "inflating the image indexed " + position);
             ImageView imageView ;
             if (convertView == null){
-                Log.i(TAG, " convertView is null");
+//                Log.i(TAG, " convertView is null");
                 imageView = new ImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setLayoutParams(mImageViewLayoutParams);
@@ -160,9 +160,9 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
                 imageView.setLayoutParams(mImageViewLayoutParams);
             }
 
-            if (imageView.getLayoutParams().height != 0){
+            if (convertView != null && imageView.getLayoutParams().height != 0){
                 Uri uri = buildUri(position);
-                Log.i(TAG, " uri is " + uri.toString());
+//                Log.i(TAG, " uri is " + uri.toString());
                 try {
                     mFetcher.loadBitmap(uri, imageView);
                 }catch (IOException e){
