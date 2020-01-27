@@ -3,6 +3,7 @@ package com.yapps.gallery.imagewall.ui;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -66,6 +67,7 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
 
         resolver = getActivity().getContentResolver();
         mFetcher = new BitmapFetcher(getActivity(), mImageThumbSize);
+        mFetcher.setLoadingBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_photo));
 
     }
 
@@ -159,15 +161,9 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
             }
 
             if (imageView.getLayoutParams().height != 0){
-                cursor.moveToPosition(position);
-                Long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
-                Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
-//                String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
-                Log.i(TAG, "image id is " + id + " and uri is " + uri.toString());
+                Uri uri = buildUri(position);
+                Log.i(TAG, " uri is " + uri.toString());
                 try {
-//                    InputStream stream = resolver.openInputStream(uri);
-//                    Log.i(TAG,  "stream is null? " + (stream == null));
-//                    mBitmapLoader.loadBitmap(resolver.openInputStream(uri), imageView, itemHeight);
                     mFetcher.loadBitmap(uri, imageView);
                 }catch (IOException e){
                     e.printStackTrace();
@@ -199,5 +195,12 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(getActivity(), "Item clicked with position= " + position + ", id= " + id, Toast.LENGTH_SHORT).show();
+    }
+
+    private Uri buildUri(int position){
+        cursor.moveToPosition(position);
+        Long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
+        return uri;
     }
 }

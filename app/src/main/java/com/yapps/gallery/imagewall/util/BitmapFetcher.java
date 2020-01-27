@@ -4,17 +4,23 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 public class BitmapFetcher {
 
+    private static final String TAG = "Fetcher";
+
     private Bitmap mLoadingBitmap = null;
 
-    private Context mContext = null;
+    private Context mContext ;
 
     private int mHeight, mWidth;
 
@@ -38,17 +44,44 @@ public class BitmapFetcher {
         mLoadingBitmap = loadingBitmap;
     }
 
+    /**
+     * load a target bitmap by an uri into the imageView with an asyncTask
+     * when the asyncTask is running, a bitmap indicates loading the final
+     * bitmap will occupy the imageView temporarily.
+     * @param uri           the final image's uri
+     * @param imageView
+     * @throws IOException
+     */
     public void loadBitmap(Uri uri, ImageView imageView) throws IOException {
-        //TODO:apply asynctask here to load a bitmap
-
+        //TODO:apply asynctask here to load a bitmap, cache will be considered
+        //
+        imageView.setImageBitmap(mLoadingBitmap);
+        BitmapLoadTask task = new BitmapLoadTask(uri, imageView);
+        task.execute();
     }
 
     private class BitmapLoadTask extends AsyncTask<Void, Void, BitmapDrawable>{
 
+        private WeakReference<ImageView> imageViewWeakReference;
+        private Uri mUri;
+
+        public BitmapLoadTask(Uri uri, ImageView view){
+            imageViewWeakReference = new WeakReference<ImageView>(view);
+//            mImageView = view;
+            mUri = uri;
+        }
 
         @Override
         protected BitmapDrawable doInBackground(Void... voids) {
-            return null;
+            Log.i(TAG, Thread.currentThread() + " doing task in back ground");
+            BitmapDrawable bitmap = null;
+            try {
+                InputStream stream = mResolver.openInputStream(mUri);
+                bitmap = new BitmapDrawable( mContext.getResources(), mBitmapLoader.loadBitmap(stream, mHeight));
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            return bitmap;
         }
 
         @Override
@@ -56,9 +89,24 @@ public class BitmapFetcher {
             super.onCancelled();
         }
 
+        /**
+         * @param bitmapDrawable
+         */
         @Override
         protected void onPostExecute(BitmapDrawable bitmapDrawable) {
+            setImageDrawable(imageViewWeakReference.get(), bitmapDrawable);
             super.onPostExecute(bitmapDrawable);
+        }
+    }
+
+    /**
+     * set the view's bitmap to the specified bitmap
+     * @param view
+     * @param value
+     */
+    private void setImageDrawable(ImageView view, Drawable value){
+        if (view != null){
+            view.setImageDrawable(value);
         }
     }
 
