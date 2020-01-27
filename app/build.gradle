@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.yapps.gallery"
         minSdkVersion 23
-        targetSdkVersion 28
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -31,5 +32,5 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-beta01"
     implementation "androidx.loader:loader:1.1.0"
 
-    implementation 'com.android.support:design:28.3.0'
+    implementation 'com.android.support:design:29.3.0'
 }
