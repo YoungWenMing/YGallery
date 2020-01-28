@@ -31,6 +31,8 @@ public class BitmapFetcher {
 
     private final ContentResolver mResolver;
 
+    private final ImageCache mImageCache;
+
     public BitmapFetcher(Context context, int size){
         this(context, size, size);
     }
@@ -41,6 +43,7 @@ public class BitmapFetcher {
         mWidth = width;
         mBitmapLoader = new BitmapLoader(context);
         mResolver = context.getContentResolver();
+        mImageCache = new ImageCache();
     }
 
     public void setLoadingBitmap(Bitmap loadingBitmap){
@@ -59,9 +62,19 @@ public class BitmapFetcher {
         //TODO:apply asynctask here to load a bitmap, cache will be considered
         //
 //        Log.i(TAG, "loading bitmap for " + imageView.getId());
-        imageView.setImageBitmap(mLoadingBitmap);
-        BitmapLoadTask task = new BitmapLoadTask(uri, imageView);
-        task.execute();
+        BitmapDrawable value = null;
+        if (mImageCache != null){
+            value = mImageCache.getBitmapFromCache(uri.toString());
+        }
+
+        //firstly consider that whether the drawable is cached in memory
+        if (value != null){
+            imageView.setImageDrawable(value);
+        }else {
+            imageView.setImageBitmap(mLoadingBitmap);
+            BitmapLoadTask task = new BitmapLoadTask(uri, imageView);
+            task.execute();
+        }
     }
 
     private class BitmapLoadTask extends AsyncTask<Void, Void, BitmapDrawable>{
@@ -84,6 +97,12 @@ public class BitmapFetcher {
                 bitmap = new BitmapDrawable( mContext.getResources(), mBitmapLoader.loadBitmap(stream, mHeight));
             }catch (IOException e){
                 e.printStackTrace();
+            }
+            //when a bitmap is loaded for first time, add it to the cache
+            if (bitmap != null){
+                if (mImageCache !=null){
+                    mImageCache.addBitmapToCache(mUri.toString(), bitmap);
+                }
             }
             return bitmap;
         }
