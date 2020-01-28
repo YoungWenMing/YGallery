@@ -5,6 +5,8 @@ import android.util.LruCache;
 
 public class ImageCache {
 
+    private static final String TAG = "ImageCache";
+
     private LruCache<String, BitmapDrawable> mImageMemCache;
 
     private final int MEM_CACHE_SIZE = 1024 * 15; //15MB
