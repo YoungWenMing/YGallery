@@ -23,7 +23,7 @@ public class BitmapFetcher {
 
     private Bitmap mLoadingBitmap = null;
 
-    private Context mContext ;
+    Context mContext ;
 
     private int mHeight, mWidth;
 
@@ -31,7 +31,7 @@ public class BitmapFetcher {
 
     private final ContentResolver mResolver;
 
-    private final ImageCache mImageCache;
+    private ImageCache mImageCache;
 
     public BitmapFetcher(Context context, int size){
         this(context, size, size);
@@ -43,7 +43,13 @@ public class BitmapFetcher {
         mWidth = width;
         mBitmapLoader = new BitmapLoader(context);
         mResolver = context.getContentResolver();
-        mImageCache = new ImageCache();
+
+    }
+
+    public void addImageCache(ImageCache.CacheLevel level){
+        if (mImageCache == null){
+            mImageCache = new ImageCache(level);
+        }
     }
 
     public void setLoadingBitmap(Bitmap loadingBitmap){
