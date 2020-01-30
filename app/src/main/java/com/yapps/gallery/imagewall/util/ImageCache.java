@@ -9,10 +9,28 @@ public class ImageCache {
 
     private LruCache<String, BitmapDrawable> mImageMemCache;
 
-    private final int MEM_CACHE_SIZE = 1024 * 15; //15MB
+    private final int LOW_CACHE_SIZE = 1024 * 5,
+                    MEDIUM_CACHE_SIZE = 1024 * 10,
+                    HIGH_CACHE_SIZE = 1024 * 15; //10MB
 
-    public ImageCache(){
-        mImageMemCache = new LruCache<>(MEM_CACHE_SIZE);
+    public enum CacheLevel {
+            LOW_CACHE, MEDIUM_CACHE, HIGH_CACHE
+    }
+
+    public ImageCache(CacheLevel level){
+        switch (level){
+            case LOW_CACHE:
+                mImageMemCache = new LruCache<>(LOW_CACHE_SIZE);
+                break;
+            case HIGH_CACHE:
+                mImageMemCache = new LruCache<>(HIGH_CACHE_SIZE);
+                break;
+            case MEDIUM_CACHE:
+                mImageMemCache = new LruCache<>(MEDIUM_CACHE_SIZE);
+                break;
+            default:
+                break;
+        }
     }
 
     public void addBitmapToCache(String data, BitmapDrawable drawable){
