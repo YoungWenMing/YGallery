@@ -34,15 +34,19 @@ public class CursorBitmapFetcher extends BitmapFetcher {
      * @param position
      * @param imageView
      */
-    public void loadBitmap(int position, ImageView imageView){
+    public void loadBitmap(int position, ImageView imageView, OnImageLoadedListener listener){
         Uri uri = buildUri(position);
         if (uri != null){
             try {
-                super.loadBitmap(uri, imageView);
+                super.loadBitmap(uri, imageView, listener);
             }catch (IOException e){
                 e.printStackTrace();
             }
         }
+    }
+
+    public void loadBitmap(int position, ImageView imageView){
+        loadBitmap(position, imageView, null);
     }
 
     private Uri buildUri(int position){

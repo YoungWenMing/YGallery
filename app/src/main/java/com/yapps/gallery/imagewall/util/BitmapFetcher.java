@@ -64,7 +64,7 @@ public class BitmapFetcher {
      * @param imageView
      * @throws IOException
      */
-    public void loadBitmap(Uri uri, ImageView imageView) throws IOException {
+    public void loadBitmap(Uri uri, ImageView imageView, OnImageLoadedListener listener) throws IOException {
         //TODO:apply asynctask here to load a bitmap, cache will be considered
         //
 //        Log.i(TAG, "loading bitmap for " + imageView.getId());
@@ -76,22 +76,39 @@ public class BitmapFetcher {
         //firstly consider that whether the drawable is cached in memory
         if (value != null){
             imageView.setImageDrawable(value);
+            if (listener != null){
+                listener.onImageLoaded(true);
+            }
         }else {
             imageView.setImageBitmap(mLoadingBitmap);
-            BitmapLoadTask task = new BitmapLoadTask(uri, imageView);
+            BitmapLoadTask task = new BitmapLoadTask(uri, imageView, listener);
             task.execute();
         }
+    }
+
+    /**
+     * listener on image loading
+     */
+    public static interface OnImageLoadedListener{
+
+        public void onImageLoaded(boolean success);
     }
 
     private class BitmapLoadTask extends AsyncTask<Void, Void, BitmapDrawable>{
 
         private WeakReference<ImageView> imageViewWeakReference;
         private Uri mUri;
+        private OnImageLoadedListener mListener;
 
         public BitmapLoadTask(Uri uri, ImageView view){
             imageViewWeakReference = new WeakReference<ImageView>(view);
 //            mImageView = view;
             mUri = uri;
+        }
+
+        public BitmapLoadTask(Uri uri, ImageView view, OnImageLoadedListener listener){
+            this(uri, view);
+            mListener = listener;
         }
 
         @Override
@@ -106,9 +123,13 @@ public class BitmapFetcher {
             }
             //when a bitmap is loaded for first time, add it to the cache
             if (bitmap != null){
-                if (mImageCache !=null){
+                if (mListener != null)
+                    mListener.onImageLoaded(true);
+                if (mImageCache != null){
                     mImageCache.addBitmapToCache(mUri.toString(), bitmap);
                 }
+            }else if (mListener != null){
+                mListener.onImageLoaded(false);
             }
             return bitmap;
         }
