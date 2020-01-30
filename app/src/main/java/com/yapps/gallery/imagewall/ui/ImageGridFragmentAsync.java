@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import com.yapps.gallery.R;
 import com.yapps.gallery.imagewall.util.BitmapFetcher;
 import com.yapps.gallery.imagewall.util.BitmapLoader;
+import com.yapps.gallery.imagewall.util.ImageCache;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,6 +69,7 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
         resolver = getActivity().getContentResolver();
         mFetcher = new BitmapFetcher(getActivity(), mImageThumbSize);
         mFetcher.setLoadingBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_photo));
+        mFetcher.addImageCache(ImageCache.CacheLevel.MEDIUM_CACHE);
 
     }
 
