@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class CursorBitmapFetcher extends BitmapFetcher {
             MediaStore.Images.Media._ID
     };
 
-    private static final String ORDER = MediaStore.Images.Media.DISPLAY_NAME + " ASC";
+    private static final String ORDER = MediaStore.Images.Media.DISPLAY_NAME+ " ASC";
 
     public CursorBitmapFetcher(Context context, int height, int width){
         super(context, height, width);
@@ -53,6 +54,7 @@ public class CursorBitmapFetcher extends BitmapFetcher {
         Uri uri = null;
         if (cursor.moveToPosition(position)){
             Long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
+            Log.i("Fetcher", "ID is " + id + " while position is " + position);
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
         }
         return uri;
@@ -61,6 +63,10 @@ public class CursorBitmapFetcher extends BitmapFetcher {
 
     public int getCount(){
         return cursor.getCount();
+    }
+
+    public void close(){
+        cursor.close();
     }
 
 }
