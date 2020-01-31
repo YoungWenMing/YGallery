@@ -72,3 +72,24 @@ Jan 27th, 2020
 增加了一级缓存之后效果好了很多，跟不需要重新从磁盘上加载图片，速度快了很多。
 
 Jan 28th, 2020
+
+当前子任务是研究放大图的呈现功能，点击缩略图显示放大之后的图片。首先看示例是如何工作的。
+
+Jan 29th, 2020
+
+ViewPager和ActionBar通常配合使用。一般而言，用ViewPager将每一页设置为全屏模式，通过点击将ActionBar
+显示或者隐藏。在Activity中设置点击监听，只要发生点击事件，那么就检查Pager.SystemUiVisibility的状态，
+将其设置为相反的可见或隐藏。
+
+>遭遇问题：
+1、首次进入照片墙，有的照片位置留白，上下刷几次之后才能正常加载;
+2、导航栏的返回按钮效果不佳，要重新加载，应该修改成跟按实际的返回栏按钮一个效果;
+3、进入大图模式之后不能左右滑，否则会退出大图模式。
+
+今天主要实现了ImageDetailActivity和ImageDetailFragment的基本功能。完善了ImageFetcher的
+监听器，扩展了Fetcher得到专门用于External storage的fetcher。
+
+特别注意到，fragment的参数传递方式是setArguments方法。由于fragment在遇到类似于横屏之类的事件重绘
+时，会调用默认构造器，使用构造器传入的参数会被抹去，而之前的参数就保留在savedInstanceStates中。
+
+Jan 30th, 2020
