@@ -1,8 +1,10 @@
 package com.yapps.gallery.imagewall.ui;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -11,7 +13,11 @@ import androidx.viewpager.widget.ViewPager;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.yapps.gallery.R;
@@ -55,6 +61,7 @@ public class ImageDetailActivity extends AppCompatActivity implements View.OnCli
         mAdapter = new ImagePageAdapter(getSupportFragmentManager(), numPages);
         mPager.setAdapter(mAdapter);
         mPager.setPageMargin((int) getResources().getDimension(R.dimen.horizontal_page_margin));
+        mPager.setOffscreenPageLimit(0);
 
         //set the action bar
         final ActionBar actionBar = getSupportActionBar();
@@ -84,6 +91,15 @@ public class ImageDetailActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private class ImagePageAdapter extends FragmentStatePagerAdapter {
         private int mSize ;
@@ -95,13 +111,17 @@ public class ImageDetailActivity extends AppCompatActivity implements View.OnCli
 
         @Override
         public Fragment getItem(int position) {
-            return null;
+            return ImageDetailFragment.getInstance(position);
         }
 
         @Override
         public int getCount() {
             return mSize;
         }
+    }
+
+    public CursorBitmapFetcher getFetcher(){
+        return mFetcher;
     }
 
     @Override
