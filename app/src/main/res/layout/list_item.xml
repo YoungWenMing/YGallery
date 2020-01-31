@@ -7,12 +7,14 @@
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/item_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="10sp"/>
+        android:textSize="10sp"
+        android:textColor="@android:color/black"/>
 
 </LinearLayout>

@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/icon_gallery"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppThemeDark">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +22,7 @@
 
         <activity android:name=".easyloader.LoaderActivity"/>
         <activity android:name=".imagewall.ui.ImageGridActivity"/>
+        <activity android:name=".imagewall.ui.ImageDetailActivity"/>
     </application>
 
 </manifest>
