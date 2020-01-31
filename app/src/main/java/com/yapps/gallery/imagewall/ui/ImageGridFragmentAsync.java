@@ -2,6 +2,7 @@ package com.yapps.gallery.imagewall.ui;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -69,7 +70,8 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
         resolver = getActivity().getContentResolver();
         mFetcher = new BitmapFetcher(getActivity(), mImageThumbSize);
         mFetcher.setLoadingBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_photo));
-        mFetcher.addImageCache(ImageCache.CacheLevel.MEDIUM_CACHE);
+        mFetcher.addImageCache(ImageCache.CacheLevel.HIGH_CACHE);
+        mFetcher.addThreadPool();
 
     }
 
@@ -196,7 +198,10 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), "Item clicked with position= " + position + ", id= " + id, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), "Item clicked with position= " + position + ", id= " + id, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), ImageDetailActivity.class);
+        intent.putExtra(ImageDetailActivity.INIT_IMAGE, position);
+        startActivity(intent);
     }
 
     private Uri buildUri(int position){
