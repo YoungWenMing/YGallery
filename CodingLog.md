@@ -93,3 +93,21 @@ ViewPager和ActionBar通常配合使用。一般而言，用ViewPager将每一�
 时，会调用默认构造器，使用构造器传入的参数会被抹去，而之前的参数就保留在savedInstanceStates中。
 
 Jan 30th, 2020
+
+先尝试解决用异步方法加载图片会出现有的照片加载不出来导致对应位置留白的问题。将加载方式换成同步加载，这个
+问题就得到解决，因此问题应该在于异步的图片加载任务有的被放弃了。
+
+记录：当前排查发现没有任务被cancel
+
+>遭遇问题，点击小图与随后显示的大图不一致。
+
+problem solved: the grid activity's cursor do not match the detail activity's one
+因为用到了两个Cursor，所以要保持大图与小图的一致性，必须保证两个cursor相同！尤其是**排序方式**！
+
+进入大图不能左右滑动的问题同样得到了解决。原因在于ViewPager在调用属于ViewGroup的addViewInner
+方法为自己添加一个View的时候，会检查这个view是否有父View，如果有则抛出异常，即使这个父View就是这个
+ViewGroup本身。在viewPager的左右滑动过程中，会涉及view的从属关系变化，应该将要返回的view的父view
+挂空，才能够避免在viewGroup检查的时候出错。
+这个过程还值得深入探究。
+
+Jan 31st, 2020
