@@ -2,6 +2,7 @@ package com.yapps.gallery.imagewall.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class ImageDetailFragment extends Fragment implements BitmapFetcher.OnIma
 
     public static final String IMAGE_NUM = "image_num";
 
+    private static final String TAG = "DetailFrag";
     private int itemNum;
 
     private ImageView imageView;
@@ -44,9 +46,10 @@ public class ImageDetailFragment extends Fragment implements BitmapFetcher.OnIma
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.image_detail_fragment, container);
+        View root = inflater.inflate(R.layout.image_detail_fragment, container, false);
         imageView = root.findViewById(R.id.image_detail_view);
         progressBar = root.findViewById(R.id.progress_bar);
+        ((ViewGroup) imageView.getParent()).removeView(imageView);
         return imageView;
     }
 
