@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BitmapFetcher {
 
@@ -32,6 +34,8 @@ public class BitmapFetcher {
     private final ContentResolver mResolver;
 
     private ImageCache mImageCache;
+
+    private ExecutorService mPool = null;
 
     public BitmapFetcher(Context context, int size){
         this(context, size, size);
@@ -50,6 +54,10 @@ public class BitmapFetcher {
         if (mImageCache == null){
             mImageCache = new ImageCache(level);
         }
+    }
+
+    public void addThreadPool(){
+        mPool =  Executors.newFixedThreadPool(2);
     }
 
     public void setLoadingBitmap(Bitmap loadingBitmap){
@@ -82,8 +90,17 @@ public class BitmapFetcher {
         }else {
             imageView.setImageBitmap(mLoadingBitmap);
             BitmapLoadTask task = new BitmapLoadTask(uri, imageView, listener);
-            task.execute();
+            if (mPool == null){
+                task.execute();
+            }else {
+                task.executeOnExecutor(mPool);
+            }
+
         }
+    }
+
+    public void loadBitmap(Uri uri, ImageView imageView) throws IOException{
+        loadBitmap(uri, imageView, null);
     }
 
     /**
@@ -113,7 +130,7 @@ public class BitmapFetcher {
 
         @Override
         protected BitmapDrawable doInBackground(Void... voids) {
-            Log.i(TAG, Thread.currentThread() + " doing task in back ground");
+//            Log.i(TAG, Thread.currentThread() + " doing task in back ground");
             BitmapDrawable bitmap = null;
             try {
                 InputStream stream = mResolver.openInputStream(mUri);
@@ -136,6 +153,7 @@ public class BitmapFetcher {
 
         @Override
         protected void onCancelled() {
+            Log.i(TAG, "AsyncTask is cancelled.");
             super.onCancelled();
         }
 
@@ -144,7 +162,8 @@ public class BitmapFetcher {
          */
         @Override
         protected void onPostExecute(BitmapDrawable bitmapDrawable) {
-            setImageDrawable(imageViewWeakReference.get(), bitmapDrawable);
+            ImageView view = imageViewWeakReference.get();
+            setImageDrawable(view, bitmapDrawable);
             super.onPostExecute(bitmapDrawable);
         }
     }
@@ -156,18 +175,19 @@ public class BitmapFetcher {
      */
     private void setImageDrawable(ImageView view, Drawable value){
         if (view != null){
-            final TransitionDrawable td =
-                    new TransitionDrawable(new Drawable[] {
-                            new ColorDrawable(Color.TRANSPARENT),
-                            value
-                    });
+//            final TransitionDrawable td =
+//                    new TransitionDrawable(new Drawable[] {
+//                            new ColorDrawable(Color.TRANSPARENT),
+//                            value
+//                    });
             // Set background to loading bitmap
-            view.setBackground(
-                    new BitmapDrawable(mContext.getResources(), mLoadingBitmap));
-
-            view.setImageDrawable(td);
-            td.startTransition(200);
+//            view.setBackground(
+//                    new BitmapDrawable(mContext.getResources(), mLoadingBitmap));
+//
+//            view.setImageDrawable(td);
+//            td.startTransition(200);
 //            view.setImageDrawable(value);
+            view.setImageDrawable(value);
         }
     }
 
