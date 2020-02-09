@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.yapps.gallery.R;
 import com.yapps.gallery.imagewall.util.BitmapFetcher;
 import com.yapps.gallery.imagewall.util.CursorBitmapFetcher;
+import com.yapps.gallery.imagewall.view.DetailImageView;
 
 public class ImageDetailFragment extends Fragment implements BitmapFetcher.OnImageLoadedListener {
 
@@ -24,7 +25,7 @@ public class ImageDetailFragment extends Fragment implements BitmapFetcher.OnIma
     private static final String TAG = "DetailFrag";
     private int itemNum;
 
-    private ImageView imageView;
+    private DetailImageView imageView;
 
     private ProgressBar progressBar;
 

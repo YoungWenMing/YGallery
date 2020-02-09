@@ -11,7 +11,7 @@ public class ImageCache {
 
     private final int LOW_CACHE_SIZE = 1024 * 5,
                     MEDIUM_CACHE_SIZE = 1024 * 10,
-                    HIGH_CACHE_SIZE = 1024 * 15; //10MB
+                    HIGH_CACHE_SIZE = 1024 * 15; //
 
     public enum CacheLevel {
             LOW_CACHE, MEDIUM_CACHE, HIGH_CACHE

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -57,14 +58,14 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, " inside onCreate");
+//        Log.i(TAG, " inside onCreate");
 
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
         cursor = getActivity().getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER);
-        Log.i(TAG, "cursor nums " + cursor.getCount());
+//        Log.i(TAG, "cursor nums " + cursor.getCount());
         mAdapter = new ImageAdapter(getActivity());
 
         resolver = getActivity().getContentResolver();
@@ -150,7 +151,7 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Log.i(TAG, "inflating the image indexed " + position);
-            ImageView imageView ;
+            final ImageView imageView ;
             if (convertView == null){
 //                Log.i(TAG, " convertView is null");
                 imageView = new ImageView(mContext);
@@ -166,13 +167,23 @@ public class ImageGridFragmentAsync extends Fragment implements AdapterView.OnIt
 
             if (convertView != null && imageView.getLayoutParams().height != 0){
                 Uri uri = buildUri(position);
-//                Log.i(TAG, " uri is " + uri.toString());
                 try {
                     mFetcher.loadBitmap(uri, imageView);
                 }catch (IOException e){
                     e.printStackTrace();
                 }
             }
+
+//            if (!imageView.hasOnClickListeners()){
+//                imageView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Toast.makeText(mContext, imageView + "clicked!", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+
+            imageView.setBackgroundColor(Color.YELLOW);
             return imageView;
         }
 

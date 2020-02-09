@@ -10,13 +10,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -24,7 +24,10 @@ import com.yapps.gallery.R;
 import com.yapps.gallery.imagewall.util.CursorBitmapFetcher;
 import com.yapps.gallery.imagewall.util.ImageCache;
 
-public class ImageDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class ImageDetailActivity extends AppCompatActivity implements View.OnClickListener,
+        GestureDetector.OnDoubleTapListener {
+
+    private static String TAG = "ImageAct";
 
     public static final String INIT_IMAGE = "initial_image";
 
@@ -132,5 +135,21 @@ public class ImageDetailActivity extends AppCompatActivity implements View.OnCli
         }else {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         }
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        Log.i(TAG, "doubleTap occurs!");
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
     }
 }
